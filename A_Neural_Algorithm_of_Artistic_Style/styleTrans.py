@@ -2,7 +2,7 @@
 File: main.py
 Author: Yutong Dai (yutongdai95@gmail.com)
 File Created: 2021-03-21 22:19
-Last Modified: 2021-03-21 23:31
+Last Modified: 2021-03-21 23:37
 --------------------------------------------
 Description:
 '''
@@ -13,7 +13,7 @@ import cv2
 import torch.optim as optim
 
 
-def style_transfer(c='./db/pikachu.jpg', s='./db/pikachu.jpg', epochs=400,
+def style_transfer(c='./db/pikachu.jpg', s='./db/starry.jpg', epochs=400,
                    c_layer=6, alpha=1, beta=6, layer_weights=0.5,
                    optimizer='adam', lr=0.1, scheduler='yes'):
     # load model
