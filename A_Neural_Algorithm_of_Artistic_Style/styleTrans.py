@@ -2,7 +2,7 @@
 File: main.py
 Author: Yutong Dai (yutongdai95@gmail.com)
 File Created: 2021-03-21 22:19
-Last Modified: 2021-03-21 23:37
+Last Modified: 2021-03-21 23:51
 --------------------------------------------
 Description:
 '''
@@ -15,7 +15,7 @@ import torch.optim as optim
 
 def style_transfer(c='./db/pikachu.jpg', s='./db/starry.jpg', epochs=400,
                    c_layer=6, alpha=1, beta=6, layer_weights=0.5,
-                   optimizer='adam', lr=0.1, scheduler='yes'):
+                   optimizer='adam', lr=0.1, scheduler='yes', G_pretrained=None):
     # load model
     model = models.vgg19(pretrained=True)
     model = model.cuda()
@@ -34,9 +34,11 @@ def style_transfer(c='./db/pikachu.jpg', s='./db/starry.jpg', epochs=400,
 
     aCs = utils.get_feature_maps(contentImage, layers, keep_grad=False)
     aSs = utils.get_feature_maps(styleImage, layers, keep_grad=False)
-
-    torch.manual_seed(0)
-    G = torch.rand(contentImage.shape, requires_grad=True, device="cuda")
+    if G_pretrained is not None:
+        G = G_pretrained
+    else:
+        torch.manual_seed(0)
+        G = torch.rand(contentImage.shape, requires_grad=True, device="cuda")
     style_layer_weights = [layer_weights for i in range(16)]
     if optimizer == 'adam':
         optimizer = optim.Adam([G], lr)
@@ -45,7 +47,7 @@ def style_transfer(c='./db/pikachu.jpg', s='./db/starry.jpg', epochs=400,
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=200)
     # learn stlye + contents
 
-    for _ in range(epochs):
+    for i in range(epochs):
         optimizer.zero_grad()
         aGs = utils.get_feature_maps(G, layers)
         loss = utils.compute_total_cost(aGs, aCs, aSs, style_layer_weights,
@@ -53,4 +55,6 @@ def style_transfer(c='./db/pikachu.jpg', s='./db/starry.jpg', epochs=400,
         loss.backward()
         optimizer.step()
         scheduler.step()
-    return G.cpu()
+        if i % 100 == 0:
+            print(f"epoch:{i:4d} | loss:{loss.data}")
+    return G
