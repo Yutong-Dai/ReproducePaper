@@ -2,7 +2,7 @@
 File: main.py
 Author: Yutong Dai (yutongdai95@gmail.com)
 File Created: 2021-03-21 22:19
-Last Modified: 2021-03-21 23:17
+Last Modified: 2021-03-21 23:31
 --------------------------------------------
 Description:
 '''
@@ -10,7 +10,7 @@ import torch
 import torchvision.models as models
 import utils
 import cv2
-import torch.optim
+import torch.optim as optim
 
 
 def style_transfer(c='./db/pikachu.jpg', s='./db/pikachu.jpg', epochs=400,
@@ -47,8 +47,7 @@ def style_transfer(c='./db/pikachu.jpg', s='./db/pikachu.jpg', epochs=400,
 
     for _ in range(epochs):
         optimizer.zero_grad()
-        imgInput = torch.transpose(G.unsqueeze(0), 1, 3)
-        aGs = utils.get_feature_maps(imgInput, layers)
+        aGs = utils.get_feature_maps(G, layers)
         loss = utils.compute_total_cost(aGs, aCs, aSs, style_layer_weights,
                                         content_layer_idx=c_layer, alpha=alpha, beta=beta)
         loss.backward()

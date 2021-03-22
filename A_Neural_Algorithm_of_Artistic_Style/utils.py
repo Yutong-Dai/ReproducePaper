@@ -2,7 +2,7 @@
 File: utils.py
 Author: Yutong Dai (yutongdai95@gmail.com)
 File Created: 2021-03-21 22:17
-Last Modified: 2021-03-21 23:10
+Last Modified: 2021-03-21 23:35
 --------------------------------------------
 Description:
 '''
@@ -147,7 +147,7 @@ def compute_total_cost(aGs, aCs, aSs, style_layer_weights,
     Returns: 
     total -- tensor representing a scalar value, cost defined above
     """
-    content_cost = compute_content_cost(aCs[content_layer_idx], aGs[content_layer_idx])
+    content_cost = compute_layer_content_cost(aCs[content_layer_idx], aGs[content_layer_idx])
     style_cost = compute_style_cost(aGs, aSs, style_layer_weights)
     total = alpha * content_cost + beta * style_cost
     return total
