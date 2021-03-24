@@ -2,20 +2,11 @@
 File: utils.py
 Author: Yutong Dai (yutongdai95@gmail.com)
 File Created: 2021-03-21 22:17
-Last Modified: 2021-03-21 23:35
+Last Modified: 2021-03-24 17:30
 --------------------------------------------
 Description:
 '''
-import os
-import sys
-import scipy.io
-import scipy.misc
-import matplotlib.pyplot as plt
-from matplotlib.pyplot import imshow
-from PIL import Image
 import torch
-import numpy as np
-import pprint
 
 
 def get_layers(model):
@@ -26,7 +17,7 @@ def get_layers(model):
     return layers
 
 
-def get_feature_maps(img, layers, keep_grad=True):
+def get_feature_maps(img, layers):
     """
         get outputs from conv2d layers
     """
@@ -35,10 +26,7 @@ def get_feature_maps(img, layers, keep_grad=True):
     for l, isConv in layers:
         imgInput = l(imgInput)
         if isConv:
-            if keep_grad:
-                aCs.append(imgInput)
-            else:
-                aCs.append(imgInput.detach())
+            aCs.append(imgInput)
     return aCs
 
 
@@ -150,4 +138,4 @@ def compute_total_cost(aGs, aCs, aSs, style_layer_weights,
     content_cost = compute_layer_content_cost(aCs[content_layer_idx], aGs[content_layer_idx])
     style_cost = compute_style_cost(aGs, aSs, style_layer_weights)
     total = alpha * content_cost + beta * style_cost
-    return total
+    return total, content_cost.data.cpu(), style_cost.data.cpu()
