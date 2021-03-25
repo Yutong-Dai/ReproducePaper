@@ -7,7 +7,7 @@ Last Modified: 2021-03-24 17:30
 Description:
 '''
 import torch
-
+import imageio
 
 def get_layers(model):
     layers = []
@@ -139,3 +139,12 @@ def compute_total_cost(aGs, aCs, aSs, style_layer_weights,
     style_cost = compute_style_cost(aGs, aSs, style_layer_weights)
     total = alpha * content_cost + beta * style_cost
     return total, content_cost.data.cpu(), style_cost.data.cpu()
+
+def get_gif(filenames, savename, duration=0.5):
+    """
+        filenames: a list of path to images
+    """
+    with imageio.get_writer(savename, mode='I', duration=duration) as writer:
+        for filename in filenames:
+            image = imageio.imread(filename)
+            writer.append_data(image)

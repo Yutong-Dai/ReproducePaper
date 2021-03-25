@@ -10,7 +10,7 @@ import os
 import torch
 import torchvision.models as models
 import utils
-# import cv2
+import cv2
 import torch.optim as optim
 from torchvision.utils import save_image
 import argparse
@@ -30,7 +30,7 @@ parser.add_argument("--starting", help="statring epoch (for continute training f
 
 def style_transfer(c='./db/pikachu.jpg', s='./db/starry.jpg', savename='pikachu-starry',
                    G_pretrained=None, epochs=10000, c_layer=5, alpha=1, beta=1e4, printevery=500, starting=0):
-    print(f"Content Image:{c} | Style Image:{s} | savename: {savename}")
+    print(f"Content Image:{c} | Style Image:{s} | savename: {savename}", flush=True)
     # load model
     model = models.vgg19(pretrained=True)
     model = model.cuda()
@@ -54,8 +54,9 @@ def style_transfer(c='./db/pikachu.jpg', s='./db/starry.jpg', savename='pikachu-
     if G_pretrained != 'None':
         G = G_pretrained
     else:
-        torch.manual_seed(0)
-        G = torch.rand(contentImage.shape, requires_grad=True, device="cuda")
+        # torch.manual_seed(0)
+        # G = torch.rand(contentImage.shape, requires_grad=True, device="cuda")
+        G = contentImage.detach().clone().requires_grad_(True).cuda()
     style_layer_weights = [1.0 / 16 for i in range(16)]
 
     optimizer = optim.AdamW([G], 0.001)
@@ -68,8 +69,8 @@ def style_transfer(c='./db/pikachu.jpg', s='./db/starry.jpg', savename='pikachu-
         loss, content_cost, style_cost = utils.compute_total_cost(aGs, aCs, aSs, style_layer_weights,
                                                                   content_layer_idx=c_layer, alpha=alpha, beta=beta)
         if (it + 1) % printevery == 0 or it == 0:
-            print(f'iters: {it+1:5d} | loss:{loss.data.cpu().item():2.3e} | content: {content_cost.item():2.3e} | style_cost:{style_cost.item():2.3e}')
-            save_image(G.permute(2, 0, 1).cpu().detach(), fp='./generated/iter_{}.png'.format(it))
+            print(f'iters: {it+1:5d} | loss:{loss.data.cpu().item():2.3e} | content: {content_cost.item():2.3e} | style_cost:{style_cost.item():2.3e}', flush=True)
+            save_image(G.permute(2, 0, 1).cpu().detach(), fp='./generated/{}/iter_{}.png'.format(savename, it+1))
         loss.backward()
         optimizer.step()
 
