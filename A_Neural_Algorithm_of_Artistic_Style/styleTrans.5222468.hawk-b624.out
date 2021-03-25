@@ -27,3 +27,16 @@ iters: 12000 | loss:4.728e-01 | content: 3.856e-01 | style_cost:8.723e-06
 iters: 12500 | loss:4.706e-01 | content: 3.846e-01 | style_cost:8.591e-06
 iters: 13000 | loss:4.695e-01 | content: 3.842e-01 | style_cost:8.533e-06
 iters: 13500 | loss:4.683e-01 | content: 3.836e-01 | style_cost:8.468e-06
+iters: 14000 | loss:4.695e-01 | content: 3.834e-01 | style_cost:8.610e-06
+iters: 14500 | loss:4.670e-01 | content: 3.824e-01 | style_cost:8.457e-06
+iters: 15000 | loss:4.649e-01 | content: 3.821e-01 | style_cost:8.282e-06
+iters: 15500 | loss:4.645e-01 | content: 3.817e-01 | style_cost:8.281e-06
+iters: 16000 | loss:4.632e-01 | content: 3.812e-01 | style_cost:8.200e-06
+iters: 16500 | loss:4.632e-01 | content: 3.806e-01 | style_cost:8.252e-06
+iters: 17000 | loss:4.625e-01 | content: 3.806e-01 | style_cost:8.187e-06
+iters: 17500 | loss:4.611e-01 | content: 3.801e-01 | style_cost:8.105e-06
+iters: 18000 | loss:4.611e-01 | content: 3.798e-01 | style_cost:8.127e-06
+iters: 18500 | loss:4.598e-01 | content: 3.796e-01 | style_cost:8.018e-06
+iters: 19000 | loss:4.592e-01 | content: 3.792e-01 | style_cost:8.005e-06
+iters: 19500 | loss:4.701e-01 | content: 3.796e-01 | style_cost:9.057e-06
+iters: 20000 | loss:4.584e-01 | content: 3.788e-01 | style_cost:7.959e-06
