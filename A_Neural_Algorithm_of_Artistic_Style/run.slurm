@@ -1,5 +1,6 @@
 #!/bin/tcsh
 #SBATCH --partition=hawkgpu
+#SBATCH —account=cse498_s2021
 #SBATCH --time=8:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1

@@ -122,7 +122,7 @@ class TrusRegionCG:
             loss_fn: callable
             aCs, aSs, style_layer_weights, c_layer, alpha, beta: function parameters
         """
-        aGs = utils.get_feature_maps(self.x, layers)
+        aGs = utils.get_feature_maps(self.x[0], layers)
         loss, content_cost, style_cost = loss_fn(aGs, aCs, aSs, style_layer_weights,
                                                  content_layer_idx=c_layer, alpha=alpha, beta=beta)
         print(f'loss:{loss.data.cpu().item():2.3e} | content: {content_cost.item():2.3e} | style_cost:{style_cost.item():2.3e}', flush=True)
@@ -130,8 +130,11 @@ class TrusRegionCG:
         p = self._steihaug(gradf, self.radius)
         print(f'   CG-Steihaug: {self.cg_iter}/{self.cgmaxiter}')
         # actual decrease at the trial point
-        xtrial = self.x + p
-        aGnews = utils.get_feature_maps(xtrial, layers)
+        with torch.no_grad():
+            xtrial = []
+            for idx in range(len(self.x)):
+                xtrial.append(self.x[idx] + p[idx] + 0.0)
+        aGnews = utils.get_feature_maps(xtrial[0], layers)
         with torch.no_grad():
             loss_new, _, _ = loss_fn(aGnews, aCs, aSs, style_layer_weights,
                                      content_layer_idx=c_layer, alpha=alpha, beta=beta)
@@ -143,7 +146,7 @@ class TrusRegionCG:
             ptHp += (hp * p[idx]).sum()
         gp = 0.0
         for idx, e in enumerate(gradf):
-            gp += e.data * p[idx]
+            gp += (e.data * p[idx]).sum()
         model_decrease = -gp.data.item() - (ptHp.data.item()) / 2
         rho = actual_decrease / model_decrease
         norm_p = 0.0
@@ -161,7 +164,7 @@ class TrusRegionCG:
                 radius_flag = 'unchanged'
         if rho > self.eta:
             for idx, e in enumerate(self.x):
-                e += p[idx]
+                e.data = e.data + p[idx].data
                 update_flag = 'move'
         else:
             update_flag = 'stay'
