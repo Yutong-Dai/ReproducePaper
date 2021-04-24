@@ -33,7 +33,7 @@ class TrusRegionCG:
         self.cg_iter = 0
         z = []
         for e in self.x:
-            z.append(torch.zeros_like(e).to(self.device))
+            z.append(torch.zeros_like(e))
         r = []
         d = []
 
@@ -43,11 +43,12 @@ class TrusRegionCG:
             # +0.0 to do a copy
             r.append(e.data + 0.0)
             d.append(0.0 - e.data)
-            norm_gradf0 += torch.norm(e)**2
+            norm_gradf0 += torch.norm(e.data)**2
         norm_gradf0 = (norm_gradf0.data.item()) ** 0.5
+        self.norm_gradf0 = norm_gradf0
         cg_tol = min(0.5, norm_gradf0**0.5) * norm_gradf0
         if norm_gradf0 < cg_tol:
-            self.flag = 'cgtol'
+            self.cgflag = 'cgtol'
             return z
         while True:
             self.cg_iter += 1
@@ -55,7 +56,7 @@ class TrusRegionCG:
             if self.cg_iter > self.cgmaxiter:
                 print("Reach cg max iterations!")
                 d = z
-                self.flag = 'cgmax'
+                self.cgflag = 'cgmax'
                 break
             # hessian vector product
             Hd = torch.autograd.grad(gradf, self.x, d, retain_graph=True)
@@ -67,41 +68,42 @@ class TrusRegionCG:
                 tau = self._findroots(z, d, radius)
                 for idx in range(len(self.x)):
                     d[idx] = z[idx] + tau * d[idx]
-                self.flag = 'negcv'
+                self.cgflag = 'negcv'
                 break
             # positive curvature
-            else:
-                norm_r_sq = 0.0
-                for e in r:
-                    norm_r_sq += (e * e).sum()
-                alpha = (norm_r_sq / dtHd).data.item()
-                znew = []
-                norm_znew = 0.0
+
+            norm_r_sq = 0.0
+            for e in r:
+                norm_r_sq += (e * e).sum()
+            alpha = (norm_r_sq / dtHd).data.item()
+
+            znew = []
+            norm_znew = 0.0
+            for idx in range(len(self.x)):
+                trial = z[idx] + alpha * d[idx] + 0.0
+                znew.append(trial)
+                norm_znew += torch.norm(trial)**2
+            norm_znew = (norm_znew ** 0.5).data.item()
+
+            if norm_znew >= radius:
+                tau = self._findroots(z, d, radius)
                 for idx in range(len(self.x)):
-                    trial = z[idx] + alpha * d[idx] + 0.0
-                    znew.append(trial)
-                    norm_znew += torch.norm(trial)**2
-                norm_znew = (norm_znew ** 0.5).data.item()
-                if norm_znew >= radius:
-                    tau = self._findroots(z, d, radius)
-                    for idx in range(len(self.x)):
-                        d[idx] = z[idx] + tau * d[idx]
-                    self.flag = 'posbd'
-                    break
-                else:
-                    rnew = []
-                    norm_rnew = 0.0
-                    for idx in range(len(self.x)):
-                        temp = r[idx] + alpha * Hd[idx] + 0.0
-                        rnew.append(temp)
-                        norm_rnew += torch.norm(temp)**2
-                    norm_rnew = norm_rnew**0.5.data.item()
-                    if norm_rnew < cg_tol:
-                        d = znew
-                        self.flag = 'cgtol'
-                    beta = (norm_rnew**2 / norm_r_sq).data.item()
-                    for idx in range(len(self.x)):
-                        d[idx] = -rnew[idx] + beta * d[idx]
+                    d[idx] = z[idx] + tau * d[idx] + 0.0
+                self.cgflag = 'posbd'
+                break
+            rnew = []
+            norm_rnew = 0.0
+            for idx in range(len(self.x)):
+                temp = r[idx] + alpha * Hd[idx] + 0.0
+                rnew.append(temp)
+                norm_rnew += torch.norm(temp)**2
+            norm_rnew = norm_rnew**0.5.data.item()
+            if norm_rnew < cg_tol:
+                d = znew
+                self.cgflag = 'cgtol'
+            beta = (norm_rnew**2 / norm_r_sq).data.item()
+            for idx in range(len(self.x)):
+                d[idx] = -rnew[idx] + beta * d[idx]
         return d
 
     def _findroots(self, z, d, radius):
@@ -112,7 +114,7 @@ class TrusRegionCG:
             c += (z[idx] * d[idx]).sum()
         b *= 2.0
         c -= radius**2
-        tau = (-2.0 * c) / (b + (b**2 - (4.0 * a * c)).sqrt())
+        tau = (-2.0 * c) / (b + (b**2 - (4.0 * a * c))**0.5)
         return tau.data.item()
 
     def step(self, loss_fn, aCs, aSs, layers, style_layer_weights,
@@ -128,7 +130,7 @@ class TrusRegionCG:
         print(f'loss:{loss.data.cpu().item():2.3e} | content: {content_cost.item():2.3e} | style_cost:{style_cost.item():2.3e}', flush=True)
         gradf = torch.autograd.grad(loss, self.x, create_graph=True)
         p = self._steihaug(gradf, self.radius)
-        print(f'   CG-Steihaug: {self.cg_iter}/{self.cgmaxiter}')
+        print(f'   CG-Steihaug: current gradf_norm:{self.norm_gradf0:3.3e} | {self.cg_iter}/{self.cgmaxiter} | terminate with: {self.cgflag}')
         # actual decrease at the trial point
         with torch.no_grad():
             xtrial = []

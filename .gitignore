@@ -1,0 +1,11 @@
+
+GAN_tutorial/db/FashionMNIST/raw/t10k-images-idx3-ubyte
+GAN_tutorial/db/FashionMNIST/raw/t10k-images-idx3-ubyte.gz
+GAN_tutorial/db/FashionMNIST/raw/t10k-labels-idx1-ubyte
+GAN_tutorial/db/FashionMNIST/raw/t10k-labels-idx1-ubyte.gz
+GAN_tutorial/db/FashionMNIST/raw/train-images-idx3-ubyte
+GAN_tutorial/db/FashionMNIST/raw/train-images-idx3-ubyte.gz
+GAN_tutorial/db/FashionMNIST/raw/train-labels-idx1-ubyte
+GAN_tutorial/db/FashionMNIST/raw/train-labels-idx1-ubyte.gz
+GAN_tutorial/db/FashionMNIST/processed/test.pt
+GAN_tutorial/db/FashionMNIST/processed/training.pt
