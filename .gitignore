@@ -9,3 +9,6 @@ GAN_tutorial/db/FashionMNIST/raw/train-labels-idx1-ubyte
 GAN_tutorial/db/FashionMNIST/raw/train-labels-idx1-ubyte.gz
 GAN_tutorial/db/FashionMNIST/processed/test.pt
 GAN_tutorial/db/FashionMNIST/processed/training.pt
+A_Neural_Algorithm_of_Artistic_Style/generated/boy-starry
+A_Neural_Algorithm_of_Artistic_Style/generated/shaohui-starry
+adversarial_robustness_model_compression/cifar10-test/data/*
