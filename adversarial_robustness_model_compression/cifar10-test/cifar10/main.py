@@ -309,6 +309,7 @@ def validate(val_loader, criterion, config):
         print(' * Acc@1 {top1.avg:.3f} '
               .format(top1=top1))
         global best_acc
+        print(f" * Best acc: {best_acc:.3f}")
         if top1.avg.item() > best_acc and not config.admm:
             best_acc = top1.avg.item()
             print('new best_acc is {top1.avg:.3f}'.format(top1=top1))

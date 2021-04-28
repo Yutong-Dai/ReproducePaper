@@ -15,7 +15,7 @@
 #log_dir     str  || logs      * destination folder to drop log file
 #smooth_eps  float|| 0.0       * smoothing rate [0.0, 1.0], set to 0.0 to disable
 #alpha       float|| 0.0       * for mixup training, lambda = Beta(alpha, alpha) distribution. Set to 0.0 to disable
-#                              * chosen value of alpha in Bag of Tricks is 0.2, and increase # of training epochs by 67%
+#                              * chosen value of alpha in open is 0.2, and increase # of training epochs by 67%
 #epochs      int  || 200       * number of training epochs for chosen stage
 #warmup_epochs      int  || 0       * number of epochs for lr warmup
 #warmup_lr      float  || 0.0001       * initial lr before warmup
@@ -95,7 +95,7 @@ admm:
  lr_scheduler: 
   default
  admm_epoch: 
-  20
+  20 
  rho: 
   0.001
  multi_rho: 
