@@ -11,9 +11,9 @@
             "program": "${file}",
             "args": [
                 "--config_file",
-                "./natural/config_w1.yaml",
+                "./prune/config_w16to8.yaml",
                 "--stage",
-                "pretrain"
+                "admm"
             ],
             "console": "integratedTerminal",
             "cwd": "${fileDirname}"

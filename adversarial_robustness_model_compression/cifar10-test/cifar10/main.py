@@ -128,7 +128,13 @@ if device == 'cuda':
 
 if config.load_model:
     # unlike resume, load model does not care optimizer status or start_epoch
-    config.load_model = config.load_model.replace('w', str(config.w))
+    if config.stage == 'admm':
+        config.load_model = config.load_model.replace('w', str(config.w))
+    else:
+        config.load_model = config.load_model.replace('w', str(config.w))
+        prune_alpha = config._prune_ratios['conv1.weight']
+        config.load_model = f"{config.load_model.split('.pt')[0]}_{prune_alpha}.pt"
+        config.save_model = f"{config.save_model.split('.pt')[0]}_{prune_alpha}.pt"
     print('==> Loading from {}'.format(config.load_model))
 
     config.model.load_state_dict(torch.load(config.load_model))  # i call 'net' "model"
@@ -352,5 +358,6 @@ if config.masked_retrain:
 
 if config.save_model and config.admm:
     config.save_model = config.save_model.replace('w', str(config.w))
+    config.save_model = f"{config.save_model.split('.pt')[0]}_{config._prune_ratios['conv1.weight']}.pt"
     print('saving model {}'.format(config.save_model))
     torch.save(config.model.state_dict(), config.save_model)
