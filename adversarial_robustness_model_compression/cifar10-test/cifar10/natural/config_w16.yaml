@@ -40,7 +40,7 @@ adv:
   loss_func:
     xent
   width_multiplier:
-    1
+    16
   init_func:
     default
 general:
