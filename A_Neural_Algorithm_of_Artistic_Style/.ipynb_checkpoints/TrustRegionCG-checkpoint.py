@@ -104,14 +104,9 @@ class TrusRegionCG:
             beta = (norm_rnew**2 / norm_r_sq).data.item()
             for idx in range(len(self.x)):
                 d[idx] = -rnew[idx] + beta * d[idx]
-            r = rnew
         return d
 
     def _findroots(self, z, d, radius):
-        """
-            ||d||^2 tau + 2d^Tz tau + ||z||^2 - radius^2 = 0
-        """
-        # this is wrong
         a, b, c = 0.0, 0.0, 0.0
         for idx in range(len(z)):
             a += (d[idx] * d[idx]).sum()
